@@ -1,0 +1,48 @@
+name: Cleanup Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Find and delete preview buckets
+        run: |
+          # Find buckets for this PR
+          BUCKETS=$(aws s3api list-buckets --query "Buckets[?contains(Name, 'dataigloo-preview-pr-${{ github.event.number }}')].Name" --output text)
+
+          for BUCKET in $BUCKETS; do
+            if [ -n "$BUCKET" ]; then
+              echo "🗑️ Cleaning up preview bucket: $BUCKET"
+
+              # Empty bucket first
+              aws s3 rm s3://$BUCKET --recursive
+
+              # Delete bucket
+              aws s3 rb s3://$BUCKET
+
+              echo "✅ Deleted: $BUCKET"
+            fi
+          done
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🧹 **Preview Cleanup Complete**
+
+              All preview deployments for this PR have been cleaned up.`
+            })
