@@ -240,7 +240,7 @@
           <Logo />
           <span class="text-sm">© {{ currentYear }} Dataigloo</span>
         </div>
-        <div class="text-sm text-white/60">Sovereign cold data storage in New Zealand • Australia coming soon</div>
+        <div class="text-sm text-white/60">Sovereign cold data storage in New Zealand • Australia coming soon • Now with EmailJS</div>
       </div>
     </footer>
   </div>
