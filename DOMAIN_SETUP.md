@@ -1,12 +1,16 @@
-# Domain Setup Guide for dataigloo.nz
+# Domain Setup Guide for dataigloo.com
 
 ## 🌐 Overview
 
-Your Dataigloo landing page is now configured to work with the `dataigloo.nz` domain. This guide explains how to set up the full domain integration with SSL and DNS.
+Your Dataigloo landing page is now configured to work with the `dataigloo.com` domain. This guide explains how to set up the full domain integration with SSL and DNS.
+
+**Domain Options:**
+- **Primary:** `dataigloo.com` (broader international reach)
+- **Alternative:** `dataigloo.com` (New Zealand market focus)
 
 ## 🏗️ Current Status
 
-✅ **Code configured** - All references to dataigloo.nz added
+✅ **Code configured** - All references to dataigloo.com added
 ✅ **CloudFormation template** - Supports SSL and Route53 setup
 ✅ **Environment variables** - Domain configuration ready
 
@@ -19,7 +23,7 @@ Your site is currently running on CloudFront's domain:
 - **Free SSL** included with CloudFront
 
 ### Option 2: Custom Domain with SSL (Recommended)
-Set up `dataigloo.nz` with proper SSL certificate:
+Set up `dataigloo.com` with proper SSL certificate:
 
 ```bash
 # Deploy with SSL certificate
@@ -27,7 +31,7 @@ aws cloudformation deploy \
   --template-file deploy/cloudformation.yaml \
   --stack-name dataigloo-production \
   --parameter-overrides \
-    DomainName=dataigloo.nz \
+    DomainName=dataigloo.com \
     BucketName=dataigloo-production-$(date +%s) \
     CreateSSLCertificate=true
 ```
@@ -41,7 +45,7 @@ aws cloudformation deploy \
   --template-file deploy/cloudformation.yaml \
   --stack-name dataigloo-production \
   --parameter-overrides \
-    DomainName=dataigloo.nz \
+    DomainName=dataigloo.com \
     BucketName=dataigloo-production-$(date +%s) \
     CreateSSLCertificate=true \
     CreateRoute53Records=true
@@ -74,11 +78,11 @@ If you're not using Route53, point your domain to CloudFront:
 2. **Create CNAME record** in your DNS provider:
    ```
    Type: CNAME
-   Name: www.dataigloo.nz
+   Name: www.dataigloo.com
    Value: [CloudFront domain from step 1]
 
    Type: A (Alias if supported)
-   Name: dataigloo.nz
+   Name: dataigloo.com
    Value: [CloudFront domain from step 1]
    ```
 
@@ -86,9 +90,9 @@ If you're not using Route53, point your domain to CloudFront:
 Set custom contact information in GitHub repository variables:
 
 ```bash
-gh variable set DOMAIN_NAME --body "dataigloo.nz"
-gh variable set SITE_URL --body "https://dataigloo.nz"
-gh variable set CONTACT_EMAIL --body "hello@dataigloo.nz"
+gh variable set DOMAIN_NAME --body "dataigloo.com"
+gh variable set SITE_URL --body "https://dataigloo.com"
+gh variable set CONTACT_EMAIL --body "hello@dataigloo.com"
 gh variable set PHONE_NUMBER --body "+64 (9) 123-4567"
 gh variable set LINKEDIN_URL --body "https://www.linkedin.com/company/dataigloo"
 ```
@@ -114,14 +118,14 @@ Check your domain setup:
 
 ```bash
 # Test SSL certificate
-curl -I https://dataigloo.nz
+curl -I https://dataigloo.com
 
 # Check DNS resolution
-nslookup dataigloo.nz
+nslookup dataigloo.com
 
 # Verify redirects
-curl -I http://dataigloo.nz  # Should redirect to https
-curl -I https://www.dataigloo.nz  # Should work
+curl -I http://dataigloo.com  # Should redirect to https
+curl -I https://www.dataigloo.com  # Should work
 ```
 
 ## 📊 CloudFormation Outputs
@@ -155,7 +159,7 @@ aws cloudformation describe-stacks \
 - Consider if you need AWS to manage DNS
 
 ### Domain Ownership
-- You must own `dataigloo.nz` domain
+- You must own `dataigloo.com` domain
 - Register through AWS Route53 or external provider
 - Point name servers to AWS if using Route53
 

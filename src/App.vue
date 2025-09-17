@@ -284,9 +284,9 @@ const form = ref({
 
 // Site configuration
 const siteConfig = {
-  domain: import.meta.env.VITE_DOMAIN || 'dataigloo.nz',
-  siteUrl: import.meta.env.VITE_SITE_URL || 'https://dataigloo.nz',
-  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || 'hello@dataigloo.nz',
+  domain: import.meta.env.VITE_DOMAIN || 'dataigloo.com',
+  siteUrl: import.meta.env.VITE_SITE_URL || 'https://dataigloo.com',
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || 'hello@dataigloo.com',
   phone: import.meta.env.VITE_PHONE_NUMBER || '+64 (0) ...',
   linkedIn: import.meta.env.VITE_LINKEDIN_URL || 'https://www.linkedin.com/company/dataigloo'
 }

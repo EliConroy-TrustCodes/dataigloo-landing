@@ -8,7 +8,7 @@ set -e
 # Configuration
 STACK_NAME="dataigloo-static-site"
 BUCKET_NAME="dataigloo-static-site-$(date +%s)"  # Unique bucket name
-DOMAIN_NAME="dataigloo.nz"
+DOMAIN_NAME="dataigloo.com"
 AWS_PROFILE=${AWS_PROFILE:-"default"}
 AWS_REGION=${AWS_REGION:-"us-east-1"}
 

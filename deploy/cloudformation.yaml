@@ -4,8 +4,8 @@ Description: 'CloudFormation template for Dataigloo static website hosting on S3
 Parameters:
   DomainName:
     Type: String
-    Description: 'Domain name for the website (e.g., dataigloo.nz)'
-    Default: 'dataigloo.nz'
+    Description: 'Primary domain name for the website (e.g., dataigloo.com)'
+    Default: 'dataigloo.com'
 
   BucketName:
     Type: String

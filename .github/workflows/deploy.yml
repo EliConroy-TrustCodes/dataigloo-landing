@@ -24,9 +24,9 @@ jobs:
 
       - name: Run build
         env:
-          VITE_DOMAIN: ${{ vars.DOMAIN_NAME || 'dataigloo.nz' }}
-          VITE_SITE_URL: ${{ vars.SITE_URL || 'https://dataigloo.nz' }}
-          VITE_CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'hello@dataigloo.nz' }}
+          VITE_DOMAIN: ${{ vars.DOMAIN_NAME || 'dataigloo.com' }}
+          VITE_SITE_URL: ${{ vars.SITE_URL || 'https://dataigloo.com' }}
+          VITE_CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'hello@dataigloo.com' }}
           VITE_PHONE_NUMBER: ${{ vars.PHONE_NUMBER || '+64 (0) ...' }}
           VITE_LINKEDIN_URL: ${{ vars.LINKEDIN_URL || 'https://www.linkedin.com/company/dataigloo' }}
           VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
