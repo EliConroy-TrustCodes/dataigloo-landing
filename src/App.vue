@@ -205,7 +205,7 @@
                   placeholder="Tell us about your data footprint, retention needs, and timelines."
                 />
               </label>
-              <Button type="submit" :disabled="isLoading">
+              <Button type="submit" :disabled="isLoading" :hideArrow="isLoading">
                 <span v-if="isLoading">Sending...</span>
                 <span v-else>Send</span>
               </Button>

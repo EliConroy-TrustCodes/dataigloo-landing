@@ -55,10 +55,27 @@ export const Button = (props, { slots }) => {
     link: `${base} p-0 text-white hover:text-[${brand.accent}]`,
   }
 
+  // If type is specified, render as button element (for forms)
+  if (props.type === 'submit' || props.type === 'button') {
+    const buttonStyles = props.disabled
+      ? `${styles[props.variant] || styles.primary} opacity-50 cursor-not-allowed`
+      : styles[props.variant] || styles.primary
+
+    return h('button', {
+      type: props.type,
+      class: buttonStyles,
+      disabled: props.disabled,
+      onClick: props.onClick
+    }, [
+      slots.default?.(),
+      !props.hideArrow && h(ArrowRight, { class: "h-4 w-4" })
+    ])
+  }
+
+  // Otherwise render as link
   return h('a', {
     href: props.href || "#",
-    class: styles[props.variant] || styles.primary,
-    type: props.type
+    class: styles[props.variant] || styles.primary
   }, [
     slots.default?.(),
     h(ArrowRight, { class: "h-4 w-4" })
