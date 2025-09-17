@@ -12,6 +12,22 @@ Parameters:
     Description: 'S3 bucket name for hosting the static website'
     Default: 'dataigloo-static-site'
 
+  CreateRoute53Records:
+    Type: String
+    Description: 'Whether to create Route53 DNS records (true/false)'
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+
+  CreateSSLCertificate:
+    Type: String
+    Description: 'Whether to create SSL certificate (true/false)'
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+
+Conditions:
+  ShouldCreateRoute53: !Equals [!Ref CreateRoute53Records, 'true']
+  ShouldCreateSSL: !Equals [!Ref CreateSSLCertificate, 'true']
+
 Resources:
   # S3 Bucket for hosting static website
   WebsiteBucket:
@@ -52,11 +68,30 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  # SSL Certificate (optional)
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Condition: ShouldCreateSSL
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Sub 'www.${DomainName}'
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          ValidationDomain: !Ref DomainName
+        - DomainName: !Sub 'www.${DomainName}'
+          ValidationDomain: !Ref DomainName
+      ValidationMethod: DNS
+
   # CloudFront Distribution
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
+        Aliases: !If
+          - ShouldCreateSSL
+          - [!Ref DomainName, !Sub 'www.${DomainName}']
+          - !Ref AWS::NoValue
         Origins:
           - DomainName: !GetAtt WebsiteBucket.DomainName
             Id: S3Origin
@@ -96,15 +131,61 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: /index.html
         PriceClass: PriceClass_100
-        ViewerCertificate:
-          CloudFrontDefaultCertificate: true
+        ViewerCertificate: !If
+          - ShouldCreateSSL
+          - AcmCertificateArn: !Ref SSLCertificate
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+          - CloudFrontDefaultCertificate: true
+
+  # Route53 Hosted Zone (optional)
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: ShouldCreateRoute53
+    Properties:
+      Name: !Ref DomainName
+      HostedZoneConfig:
+        Comment: !Sub 'Hosted zone for ${DomainName}'
+
+  # Route53 A Record for apex domain (optional)
+  AliasRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: ShouldCreateRoute53
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # CloudFront hosted zone ID
+
+  # Route53 A Record for www subdomain (optional)
+  WWWAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: ShouldCreateRoute53
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub 'www.${DomainName}'
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # CloudFront hosted zone ID
 
 Outputs:
   WebsiteURL:
     Description: 'URL of the website'
-    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Value: !If
+      - ShouldCreateSSL
+      - !Sub 'https://${DomainName}'
+      - !Sub 'https://${CloudFrontDistribution.DomainName}'
     Export:
       Name: !Sub '${AWS::StackName}-WebsiteURL'
+
+  CloudFrontURL:
+    Description: 'CloudFront distribution URL'
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-CloudFrontURL'
 
   S3BucketName:
     Description: 'Name of the S3 bucket'
@@ -117,3 +198,24 @@ Outputs:
     Value: !Ref CloudFrontDistribution
     Export:
       Name: !Sub '${AWS::StackName}-CloudFrontDistributionId'
+
+  SSLCertificateArn:
+    Description: 'SSL Certificate ARN'
+    Condition: ShouldCreateSSL
+    Value: !Ref SSLCertificate
+    Export:
+      Name: !Sub '${AWS::StackName}-SSLCertificateArn'
+
+  HostedZoneId:
+    Description: 'Route53 Hosted Zone ID'
+    Condition: ShouldCreateRoute53
+    Value: !Ref HostedZone
+    Export:
+      Name: !Sub '${AWS::StackName}-HostedZoneId'
+
+  NameServers:
+    Description: 'Route53 Name Servers (point your domain registrar to these)'
+    Condition: ShouldCreateRoute53
+    Value: !Join [', ', !GetAtt HostedZone.NameServers]
+    Export:
+      Name: !Sub '${AWS::StackName}-NameServers'

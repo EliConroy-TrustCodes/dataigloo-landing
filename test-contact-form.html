@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Contact Form</title>
+</head>
+<body>
+    <h1>Contact Form Test</h1>
+    <p>Visit the live site and test the contact form:</p>
+    <a href="http://dataigloo-demo-1758085489.s3-website-ap-southeast-1.amazonaws.com#contact" target="_blank">
+        Open Dataigloo Contact Form
+    </a>
+
+    <h2>What to test:</h2>
+    <ol>
+        <li>Click the "Send" button - it should now be clickable</li>
+        <li>Fill in the form fields</li>
+        <li>Click Send again - you should see "Sending..." with loading state</li>
+        <li>If EmailJS is configured, you'll see success message</li>
+        <li>If EmailJS is not configured yet, you'll see an error message</li>
+    </ol>
+
+    <h2>Fixed Issues:</h2>
+    <ul>
+        <li>✅ Button now renders as proper &lt;button&gt; element instead of &lt;a&gt;</li>
+        <li>✅ Form submission properly triggered on click</li>
+        <li>✅ Disabled state during sending</li>
+        <li>✅ Loading indicator works</li>
+    </ul>
+</body>
+</html>

@@ -217,10 +217,10 @@
             <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
               <div class="text-xl font-semibold text-white">Contact details</div>
               <div class="mt-3 grid gap-2 text-white/80">
-                <div>hello@dataigloo.nz</div>
-                <div>+64 (0) …</div>
+                <div>{{ siteConfig.contactEmail }}</div>
+                <div>{{ siteConfig.phone }}</div>
                 <div>Regional NZ • AU coming soon</div>
-                <div><a class="underline" href="https://www.linkedin.com/company/dataigloo">LinkedIn</a></div>
+                <div><a class="underline" :href="siteConfig.linkedIn">LinkedIn</a></div>
               </div>
             </div>
             <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -282,6 +282,15 @@ const form = ref({
   message: ''
 })
 
+// Site configuration
+const siteConfig = {
+  domain: import.meta.env.VITE_DOMAIN || 'dataigloo.nz',
+  siteUrl: import.meta.env.VITE_SITE_URL || 'https://dataigloo.nz',
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || 'hello@dataigloo.nz',
+  phone: import.meta.env.VITE_PHONE_NUMBER || '+64 (0) ...',
+  linkedIn: import.meta.env.VITE_LINKEDIN_URL || 'https://www.linkedin.com/company/dataigloo'
+}
+
 // EmailJS configuration - these will come from environment variables
 const emailjsConfig = {
   serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'your_service_id',
@@ -342,7 +351,7 @@ const handleSubmit = async () => {
         from_email: form.value.email,
         company: form.value.company,
         message: form.value.message,
-        to_email: 'hello@dataigloo.nz' // Your receiving email
+        to_email: siteConfig.contactEmail
       }
     )
 
