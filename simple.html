@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataigloo - Sovereign Cold Data Storage</title>
+    <meta name="description" content="Sovereign cold data storage for enterprises. Offload inactive and compliance data to air‑gapped, WORM‑capable vaults within New Zealand jurisdiction.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0B0C0E;
+            color: #F4F4F5;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        header { padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .hero { padding: 80px 0; text-align: center; }
+        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 24px; }
+        .hero p { font-size: 1.25rem; color: rgba(244,244,245,0.8); max-width: 600px; margin: 0 auto 40px; }
+        .button {
+            display: inline-block;
+            background: white;
+            color: black;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 12px 12px 0;
+        }
+        .button:hover { opacity: 0.9; }
+        .section { padding: 80px 0; }
+        .section h2 { font-size: 2.5rem; font-weight: 600; margin-bottom: 32px; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 40px; }
+        .feature {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .feature h3 { color: #8AB4FF; margin-bottom: 12px; }
+        .contact { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 40px; margin-top: 40px; }
+        .contact-form { display: grid; gap: 20px; max-width: 500px; }
+        .contact-form input, .contact-form textarea {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-family: inherit;
+        }
+        .contact-form input:focus, .contact-form textarea:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.3);
+        }
+        footer { padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.12); text-align: center; color: rgba(244,244,245,0.6); }
+        .accent { background: linear-gradient(90deg, #F4F4F5, #8AB4FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 style="font-size: 1.5rem;">Dataigloo</h1>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Sovereign <span class="accent">cold data storage</span> for enterprises.</h1>
+            <p>Offload inactive and compliance data to air‑gapped, WORM‑capable vaults with policy‑based tiering and audit‑ready integrity — all within New Zealand jurisdiction.</p>
+            <a href="#contact" class="button">Book a workshop</a>
+            <a href="#how" class="button" style="background: transparent; color: white; border: 1px solid rgba(255,255,255,0.15);">See how it works</a>
+        </div>
+    </section>
+
+    <section id="how" class="section">
+        <div class="container">
+            <h2>How it works</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>1. Ingest hot</h3>
+                    <p>New or frequently accessed data lives on production or cloud tiers to meet performance SLAs.</p>
+                </div>
+                <div class="feature">
+                    <h3>2. Detect inactivity</h3>
+                    <p>Policy thresholds (e.g., no reads for 90 days) flag candidates for tiering.</p>
+                </div>
+                <div class="feature">
+                    <h3>3. Tier to cold</h3>
+                    <p>Move inactive data to sovereign, air‑gapped vaults with WORM + integrity checks. Retrieve on demand.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Why cold data storage?</h2>
+            <div class="features">
+                <div class="feature">Prevent primary storage overload</div>
+                <div class="feature">Utilise economical cold media</div>
+                <div class="feature">Reduce total storage TCO</div>
+                <div class="feature">Simplify management via policy tiering</div>
+                <div class="feature">Meet compliance & governance efficiently</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <div class="container">
+            <h2>Come on the journey with us</h2>
+            <div class="contact">
+                <h3 style="margin-bottom: 24px;">Contact us</h3>
+                <div class="contact-form">
+                    <input type="text" placeholder="Your name" required>
+                    <input type="email" placeholder="you@company.com" required>
+                    <input type="text" placeholder="Organisation">
+                    <textarea rows="4" placeholder="Tell us about your data footprint, retention needs, and timelines."></textarea>
+                    <button class="button" onclick="alert('Contact form works! EmailJS integration available in full Vue version.')">Send Message</button>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <h4>Contact details</h4>
+                    <p>hello@dataigloo.com</p>
+                    <p>+64 (0) ...</p>
+                    <p>Regional NZ • AU coming soon</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Dataigloo • Sovereign cold data storage in New Zealand • Australia coming soon</p>
+            <p style="margin-top: 12px; font-size: 0.9rem;">This is a simplified version. Full Vue app with EmailJS integration available.</p>
+        </div>
+    </footer>
+</body>
+</html>

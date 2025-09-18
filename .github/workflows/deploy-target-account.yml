@@ -1,0 +1,125 @@
+name: Deploy to Target Account (768472023706)
+
+on:
+  workflow_dispatch:
+    inputs:
+      bucket_name:
+        description: 'S3 bucket name (leave empty for auto-generated)'
+        required: false
+        default: ''
+      aws_region:
+        description: 'AWS Region'
+        required: false
+        default: 'us-east-1'
+
+jobs:
+  deploy-target:
+    runs-on: ubuntu-latest
+    environment: target-account
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        env:
+          VITE_DOMAIN: ${{ vars.DOMAIN_NAME || 'dataigloo.com' }}
+          VITE_SITE_URL: ${{ vars.SITE_URL || 'https://dataigloo.com' }}
+          VITE_CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'hello@dataigloo.com' }}
+          VITE_PHONE_NUMBER: ${{ vars.PHONE_NUMBER || '+64 (0) ...' }}
+          VITE_LINKEDIN_URL: ${{ vars.LINKEDIN_URL || 'https://www.linkedin.com/company/dataigloo' }}
+          VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
+          VITE_EMAILJS_TEMPLATE_ID: ${{ secrets.VITE_EMAILJS_TEMPLATE_ID }}
+          VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.TARGET_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.TARGET_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.aws_region || 'us-east-1' }}
+
+      - name: Verify target account
+        run: |
+          CURRENT_ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
+          TARGET_ACCOUNT="768472023706"
+
+          if [ "$CURRENT_ACCOUNT" != "$TARGET_ACCOUNT" ]; then
+            echo "❌ Error: Current account ($CURRENT_ACCOUNT) != Target account ($TARGET_ACCOUNT)"
+            exit 1
+          fi
+
+          echo "✅ Confirmed deployment to account: $TARGET_ACCOUNT"
+
+      - name: Set bucket name
+        id: bucket
+        run: |
+          if [ -n "${{ github.event.inputs.bucket_name }}" ]; then
+            BUCKET_NAME="${{ github.event.inputs.bucket_name }}"
+          else
+            BUCKET_NAME="dataigloo-$(date +%s)"
+          fi
+          echo "bucket_name=$BUCKET_NAME" >> $GITHUB_OUTPUT
+          echo "Using bucket: $BUCKET_NAME"
+
+      - name: Deploy to S3
+        id: deploy
+        run: |
+          BUCKET_NAME="${{ steps.bucket.outputs.bucket_name }}"
+          REGION="${{ github.event.inputs.aws_region || 'us-east-1' }}"
+
+          # Create bucket
+          aws s3 mb s3://$BUCKET_NAME --region $REGION
+
+          # Enable website hosting
+          aws s3 website s3://$BUCKET_NAME \
+            --index-document index.html \
+            --error-document index.html
+
+          # Set public access
+          aws s3api put-public-access-block \
+            --bucket $BUCKET_NAME \
+            --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
+
+          # Set bucket policy
+          aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "PublicReadGetObject",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::'$BUCKET_NAME'/*"
+              }
+            ]
+          }'
+
+          # Upload files
+          aws s3 sync dist/ s3://$BUCKET_NAME --delete
+
+          # Generate URL
+          if [ "$REGION" = "us-east-1" ]; then
+            WEBSITE_URL="http://$BUCKET_NAME.s3-website.amazonaws.com"
+          else
+            WEBSITE_URL="http://$BUCKET_NAME.s3-website-$REGION.amazonaws.com"
+          fi
+
+          echo "website_url=$WEBSITE_URL" >> $GITHUB_OUTPUT
+
+      - name: Deployment Summary
+        run: |
+          echo "🎉 Deployment to account 768472023706 complete!"
+          echo "🌐 Website URL: ${{ steps.deploy.outputs.website_url }}"
+          echo "🪣 S3 Bucket: ${{ steps.bucket.outputs.bucket_name }}"
+          echo "📍 Region: ${{ github.event.inputs.aws_region || 'us-east-1' }}"
